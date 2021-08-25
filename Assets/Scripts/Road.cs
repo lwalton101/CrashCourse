@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Road : MonoBehaviour
 {
-    [SerializeField] private Lane lane;
+    [SerializeField] private Lane lane = Lane.Blue;
 	// Start is called before the first frame update
 	void Start()
     {
@@ -19,8 +19,8 @@ public class Road : MonoBehaviour
 
     public enum Lane
 	{
-        RED,
-        PURPLE,
-        BLUE
+        Red,
+        Purple,
+        Blue
 	}
 }

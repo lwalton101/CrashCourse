@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -7,19 +7,29 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     public GameObject currentCar;
-    [SerializeField] private GameObject carPrefab;
-    [SerializeField] private float movementGap = -3f;
+    [SerializeField] private GameObject carPrefab = null;
     public List<Sprite> carSprites = new List<Sprite>();
-    [SerializeField] private TextMeshPro stopWatchText;
+    [SerializeField] private List<Sprite> lifeSprites = new List<Sprite>();
+    [SerializeField] private TextMeshPro stopWatchText = null;
+    [SerializeField] private TextMeshPro pointsText = null;
     private float secondsCount;
     private float rawSeconds;
     private int minutesCount;
     private float lastTime = 0;
-    [SerializeField] private float timeBetweenSpawns;
+    [SerializeField] private float timeBetweenSpawns = 0f;
     private bool firstSpawn = false;
     public float score = 0;
     [SerializeField] private float divideBy = 1000;
     private Road.Lane lastLane;
+    public int lives = 3;
+    [SerializeField] private GameObject livesObject;
+
+    [Header("Debugs")]
+    [SerializeField] private bool debugMode = false;
+    [SerializeField] private int redSpawns = 0;
+    [SerializeField] private int purpleSpawns = 0;
+    [SerializeField] private int blueSpawns = 0;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -27,6 +37,8 @@ public class GameManager : MonoBehaviour
             instance = this;
         else
             Destroy(gameObject);
+
+        lastLane = Road.Lane.Red;
     }
 
     // Update is called once per frame
@@ -34,34 +46,52 @@ public class GameManager : MonoBehaviour
     {
         StopWatch();
         SpawnCar();
-        if(currentCar != null)
+        if(currentCar != null && debugMode)
 		{
-            Collider2D centerCol = Physics2D.OverlapPoint(new Vector2(currentCar.transform.position.x, currentCar.GetComponent<SpriteRenderer>().bounds.center.y - currentCar.GetComponent<SpriteRenderer>().bounds.extents.y));
-            Collider2D topCol = Physics2D.OverlapPoint(new Vector2(currentCar.transform.position.x, currentCar.GetComponent<SpriteRenderer>().bounds.center.y - currentCar.GetComponent<SpriteRenderer>().bounds.extents.y));
-            Collider2D bottomCol = Physics2D.OverlapPoint(new Vector2(currentCar.transform.position.x, currentCar.GetComponent<SpriteRenderer>().bounds.center.y - currentCar.GetComponent<SpriteRenderer>().bounds.extents.y));
-            
-            Debug.Log(centerCol);
-            Debug.Log(topCol);
-            Debug.Log(bottomCol);
+            Collider2D centerCol = Physics2D.OverlapPoint(new Vector2(currentCar.transform.position.x + 8, currentCar.transform.position.y));
+            Collider2D topCol = Physics2D.OverlapPoint(new Vector2(currentCar.transform.position.x + 8, currentCar.transform.position.y + 0.75f));
+            Collider2D bottomCol = Physics2D.OverlapPoint(new Vector2(currentCar.transform.position.x + 8, currentCar.transform.position.y - 0.7f));
+
+            Debug.Log("Top Collider: " + topCol.name);
+            Debug.Log("Center Collider: " + centerCol.name);
+            Debug.Log("Bottom Collider: " + bottomCol.name);
         }
+
+        livesObject.GetComponent<SpriteRenderer>().sprite = lifeSprites.ElementAt(lives);
+
+        if(lives == 0)
+		{
+            GameOver();
+		}
+
+        pointsText.text = score.ToString();
     }
 
-    public void SpawnCar()
+	private void GameOver()
+	{
+		throw new System.NotImplementedException();
+	}
+
+	public void SpawnCar()
     {
-        
         if((int)(secondsCount) == 0 && !firstSpawn)
 		{
             firstSpawn = true;
             GameObject firstCar = GameObject.Instantiate(carPrefab, new Vector3(-10.75f, -9f, 0), Quaternion.identity);
 
-            firstCar.GetComponent<Car>().currentLane = Road.Lane.RED;
-            firstCar.GetComponent<Car>().carType = Car.CarType.RED;
+            firstCar.GetComponent<Car>().currentLane = Road.Lane.Red;
+            firstCar.GetComponent<Car>().carType = Car.CarType.Purple;
             
         }
         float localtime = (int)lastTime + timeBetweenSpawns - (score / divideBy);
+        if(score / divideBy >= 1.75)
+		{
+            localtime = lastTime + 1.75f;
+		}
+
         if (rawSeconds < localtime)
 		{
-            //Debug.Log(rawSeconds + " is smaller than" + " " + localtime);
+            Debug.Log(rawSeconds + " is smaller than" + " " + localtime);
             return;
 		}
         lastTime = (int)rawSeconds;
@@ -70,7 +100,7 @@ public class GameManager : MonoBehaviour
 
         Car.CarType carType = (Car.CarType)Random.Range(0, 3);
         Road.Lane lane = (Road.Lane)Random.Range(0, 3);
-        if(lastLane != null && lane == lastLane)
+        if(lane == lastLane)
 		{
             
             List<Road.Lane> lanes = new List<Road.Lane>();
@@ -87,14 +117,17 @@ public class GameManager : MonoBehaviour
 
 		switch (lane)
 		{
-            case Road.Lane.RED:
+            case Road.Lane.Red:
                 x = -10f;
+                redSpawns++;
                 break;
-            case Road.Lane.PURPLE:
+            case Road.Lane.Purple:
                 x = -2f;
+                purpleSpawns++;
                 break;
-            case Road.Lane.BLUE:
+            case Road.Lane.Blue:
                 x = 6f;
+                blueSpawns++;
                 break;
 		}
 
@@ -107,11 +140,7 @@ public class GameManager : MonoBehaviour
             x = x - .75f;
 		}
 
-        GameObject car = GameObject.Instantiate(carPrefab, new Vector3(x, y, 0), Quaternion.identity);
-
-        car.GetComponent<Car>().currentLane = lane;
-        car.GetComponent<Car>().carType = carType;
-        lastLane = lane;
+        CheckIfSafe(new Vector2(x, y), lane, carType);
     }
 
     public void SwitchLane(Road.Lane toSwitchTo)
@@ -123,41 +152,64 @@ public class GameManager : MonoBehaviour
 
 		if (car.currentLane.Equals(toSwitchTo)) { return; }
 
-        Collider2D collider2D = Physics2D.OverlapPoint(new Vector2(currentCar.transform.position.x + (laneDifference * 8), currentCar.transform.position.y));
-        if(collider2D != null && collider2D.gameObject.CompareTag("Car"))
-		{
-            CheckToTeleport(collider2D.gameObject, currentCar, toSwitchTo);
-            return;
-		}
-        currentCar.transform.position = new Vector2(currentCar.transform.position.x + (laneDifference * 8), currentCar.transform.position.y);
-        car.currentLane = toSwitchTo;
-        GameManager.instance.currentCar = null;
+        CheckIfSafe(new Vector2(currentCar.transform.position.x + (laneDifference * 8), currentCar.transform.position.y), toSwitchTo);
+
     }
 
     //TIME FOR RECURSION THIS WILL WORK I PROMISE
-    public void CheckToTeleport(GameObject lastCar, GameObject currentCar, Road.Lane toSwitchTo)
+    public void CheckIfSafe(Vector2 center, Road.Lane toSwitchTo)
 	{
+        Collider2D centerCol = Physics2D.OverlapPoint(new Vector2(center.x, center.y));
+        Collider2D topCol = Physics2D.OverlapPoint(new Vector2(center.x, center.y + 0.75f));
+        Collider2D bottomCol = Physics2D.OverlapPoint(new Vector2(center.x, center.y - 0.7f));
         
-        Collider2D collider2 = Physics2D.OverlapPoint(new Vector2(lastCar.transform.position.x, lastCar.transform.position.y - movementGap));
-        if (collider2 == null || !collider2.gameObject.CompareTag("Car"))
+        Car car = currentCar.GetComponent<Car>();
+
+        if (centerCol != null && centerCol.gameObject.CompareTag("Car") && topCol != null && !topCol.gameObject.CompareTag("Car") && bottomCol != null && bottomCol.gameObject.CompareTag("Car"))
 		{
-            Debug.Log("I AM A TERRIBLE PIRATE YA HEAR EM I HAVE FAILED TO FIND THAT BINGING COLLIDER");
-            currentCar.transform.position = new Vector2(lastCar.transform.position.x, lastCar.transform.position.y - movementGap);
-            currentCar.GetComponent<Car>().currentLane = toSwitchTo;
-            GameManager.instance.currentCar = null;
+            centerCol = Physics2D.OverlapPoint(new Vector2(center.x, center.y + 1f)); 
+            topCol = Physics2D.OverlapPoint(new Vector2(center.x, center.y + 1.75f));
+            bottomCol = Physics2D.OverlapPoint(new Vector2(center.x, center.y + .3f));
+
+            if (centerCol != null && !centerCol.gameObject.CompareTag("Car") && topCol != null && !topCol.gameObject.CompareTag("Car") && bottomCol != null && !bottomCol.gameObject.CompareTag("Car"))
+            {
+                currentCar.transform.position = (new Vector2(center.x, center.y + 1f));
+                car.currentLane = toSwitchTo;
+                currentCar = null;
+                return;
+            }
+        }
+
+        if (centerCol != null && centerCol.gameObject.CompareTag("Car") || topCol != null && topCol.gameObject.CompareTag("Car") || bottomCol != null && bottomCol.gameObject.CompareTag("Car"))
+		{
+            CheckIfSafe(new Vector2(center.x, center.y - .5f), toSwitchTo);
             return;
 		}
-        Debug.Log("I AM A FUCKING GOD");
-        
-		CheckToTeleport(collider2.gameObject, currentCar, toSwitchTo);
-		
+        currentCar.transform.position = center;
+        car.currentLane = toSwitchTo;
+        currentCar = null;
         return;
-	}
+    }
 
-    public void CheckBelow(Vector2 spawnpoint)
+    public void CheckIfSafe(Vector2 center, Road.Lane lane, Car.CarType carType)
 	{
+        Collider2D centerCol = Physics2D.OverlapPoint(new Vector2(center.x, center.y));
+        Collider2D topCol = Physics2D.OverlapPoint(new Vector2(center.x, center.y + 0.75f));
+        Collider2D bottomCol = Physics2D.OverlapPoint(new Vector2(center.x, center.y - 0.7f));
+        
+        if (centerCol != null && centerCol.gameObject.CompareTag("Car") || topCol != null && topCol.gameObject.CompareTag("Car") || bottomCol != null && bottomCol.gameObject.CompareTag("Car"))
+        {
+            CheckIfSafe(new Vector2(center.x, center.y - .5f), lane, carType);
+            return;
+        }
 
-	}
+        GameObject car = Instantiate(carPrefab, center, Quaternion.identity);
+
+        car.GetComponent<Car>().currentLane = lane;
+        car.GetComponent<Car>().carType = carType;
+        lastLane = lane;
+        return;
+    }
 
     public void StopWatch()
 	{

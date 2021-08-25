@@ -99,7 +99,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.0011700392, y: 0.005265236}
+  m_Offset: {x: -0.0011700392, y: 0.004963994}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -110,7 +110,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.23956227, y: 0.36943626}
+  m_Size: {x: 0.23955183, y: 0.36996937}
   m_EdgeRadius: 0
 --- !u!114 &5843099676944708712
 MonoBehaviour:
@@ -124,7 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: add2fe85054a15f43a3bbe0b503771bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 15
+  speed: 25
   carType: 0
   currentLane: 0
   carSprites:
