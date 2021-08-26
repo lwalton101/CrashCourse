@@ -8,7 +8,6 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public GameObject currentCar;
     [SerializeField] private GameObject carPrefab = null;
-    public List<Sprite> carSprites = new List<Sprite>();
     [SerializeField] private List<Sprite> lifeSprites = new List<Sprite>();
     [SerializeField] private TextMeshPro stopWatchText = null;
     [SerializeField] private TextMeshPro pointsText = null;
@@ -27,7 +26,9 @@ public class GameManager : MonoBehaviour
     public float timeScale = 0f;
     public float speedMultiplier = 0.05f;
     public float spawnMultiplier = 0.05f;
+    public float speedArrow;
     public float numberOf5s = 0f;
+    private int lastNumber;
 
     [Header("Debugs")]
     [SerializeField] private bool debugMode = false;
@@ -52,6 +53,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = timeScale;
         StopWatch();
         SpawnCar();
+
         if(currentCar != null && debugMode)
 		{
             Collider2D centerCol = Physics2D.OverlapPoint(new Vector2(currentCar.transform.position.x + 8, currentCar.transform.position.y));
@@ -61,6 +63,10 @@ public class GameManager : MonoBehaviour
             Debug.Log("Top Collider: " + topCol.name);
             Debug.Log("Center Collider: " + centerCol.name);
             Debug.Log("Bottom Collider: " + bottomCol.name);
+
+            Car car = currentCar.GetComponent<Car>();
+
+            //Debug.Log("Current Lane: " + car.currentLane + ", Car Type: " + car.carType + ", Car Sprite: " + car.carSprites.ElementAt((int)car.carType));
         }
 
         livesObject.GetComponent<SpriteRenderer>().sprite = lifeSprites.ElementAt(lives);
@@ -73,7 +79,7 @@ public class GameManager : MonoBehaviour
         pointsText.text = score.ToString();
     }
 
-	private void GameOver()
+	public void GameOver()
 	{
 		throw new System.NotImplementedException();
 	}
@@ -91,22 +97,26 @@ public class GameManager : MonoBehaviour
         }
         float changeBy = 3 - (rawSeconds / spawnMultiplier);
         float localtime = lastTime + changeBy;
-        Debug.Log("Change By: " + changeBy + " Local Time: " + localtime + " To be subtracted: " + (rawSeconds / spawnMultiplier)); 
-        if(changeBy <= 1.75)
+        if(changeBy <= .5f)
 		{
-            localtime = lastTime + 1.75f;
+            changeBy = .5f;
+            localtime = lastTime + .5f;
 		}
-
+        Debug.Log(changeBy);
         if (rawSeconds < localtime)
 		{
             //Debug.Log(rawSeconds + " is smaller than" + " " + localtime);
             return;
 		}
-        lastTime = (int)rawSeconds;
-        float chance = Random.Range(0,101);
+        lastTime = localtime;
 
+        //Debug.Log("Change By: " + changeBy + " Last Time : " + lastTime + " Local Time: " + localtime + " To be subtracted: " + (rawSeconds / spawnMultiplier) + " Raw Seconds: " + rawSeconds + " is smaller than" + " " + localtime);
 
         Car.CarType carType = (Car.CarType)Random.Range(0, 3);
+        if(Random.Range(0,9) == 0)
+		{
+            carType = Car.CarType.Multi;
+		}
         Road.Lane lane = (Road.Lane)Random.Range(0, 3);
         if(lane == lastLane)
 		{
@@ -149,6 +159,22 @@ public class GameManager : MonoBehaviour
 		}
 
         CheckIfSafe(new Vector2(x, y), lane, carType);
+
+        float chance = Random.Range(0, 101);
+
+        if(chance > 5)
+		{
+            return;
+		}
+
+        Car.CarType specialCarType = (Car.CarType)Random.Range(4, 7);
+        float specialX = x + 1.5f;
+        GameObject car = Instantiate(carPrefab, new Vector2(specialX, y + -2), Quaternion.identity);
+        car.name = lane.ToString();
+        car.GetComponent<Car>().currentLane = lane;
+        car.GetComponent<Car>().carType = specialCarType;
+        //car.GetComponent<Car>().GetComponent<SpriteRenderer>().sprite = car.GetComponent<Car>().carSprites.ElementAt((int)specialCarType);
+        lastLane = lane;
     }
 
     public void SwitchLane(Road.Lane toSwitchTo)
@@ -212,7 +238,7 @@ public class GameManager : MonoBehaviour
         }
 
         GameObject car = Instantiate(carPrefab, center, Quaternion.identity);
-
+        //car.GetComponent<Car>().GetComponent<SpriteRenderer>().sprite = car.GetComponent<Car>().carSprites.ElementAt((int)carType);
         car.GetComponent<Car>().currentLane = lane;
         car.GetComponent<Car>().carType = carType;
         lastLane = lane;
@@ -241,6 +267,12 @@ public class GameManager : MonoBehaviour
 		{
             minutesCount++;
             secondsCount = 0;
+		}
+        if((int)rawSeconds % 5 == 0)
+		{
+            if(lastNumber == (int)rawSeconds) { return; }
+            numberOf5s++;
+            lastNumber = (int)rawSeconds;
 		}
     }
 }

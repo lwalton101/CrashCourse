@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5025480590530876391
 Transform:
   m_ObjectHideFlags: 0
@@ -213,6 +213,12 @@ MonoBehaviour:
   - {fileID: 21300000, guid: c9b133796ade6fa408ac2b0fbe3c7db0, type: 3}
   - {fileID: 21300000, guid: 312b5fe3f37c358449088e6e6574055f, type: 3}
   - {fileID: 21300000, guid: 8a4caeeb5904c2642aae23feee9a6c61, type: 3}
+  - {fileID: 21300000, guid: 38fda892094fcc2478ac69a035338d3d, type: 3}
+  - {fileID: 21300000, guid: 6749414e7af07734abda2fff86a8077d, type: 3}
+  - {fileID: 21300000, guid: 78a396ce9819e8b4a91e9102cae283db, type: 3}
+  - {fileID: 21300000, guid: 9fae0c7315a3eb140b1b228550c9bd14, type: 3}
+  selectObject: {fileID: 3227836130687525150}
+  bombState: 0
 --- !u!50 &5843099676944708708
 Rigidbody2D:
   serializedVersion: 4
