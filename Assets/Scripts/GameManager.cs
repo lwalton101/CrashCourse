@@ -76,7 +76,7 @@ public class GameManager : MonoBehaviour
             GameOver();
 		}
 
-        pointsText.text = score.ToString();
+        pointsText.text = "Points: " + score.ToString();
     }
 
 	public void GameOver()
@@ -113,7 +113,7 @@ public class GameManager : MonoBehaviour
         //Debug.Log("Change By: " + changeBy + " Last Time : " + lastTime + " Local Time: " + localtime + " To be subtracted: " + (rawSeconds / spawnMultiplier) + " Raw Seconds: " + rawSeconds + " is smaller than" + " " + localtime);
 
         Car.CarType carType = (Car.CarType)Random.Range(0, 3);
-        if(Random.Range(0,9) == 0)
+        if(Random.Range(0,20) == 0)
 		{
             carType = Car.CarType.Multi;
 		}
