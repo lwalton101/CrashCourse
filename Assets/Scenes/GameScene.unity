@@ -1103,11 +1103,16 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 8a446fb0c8a42d040b6117dd829cca6d, type: 3}
   stopWatchText: {fileID: 1629421461}
   pointsText: {fileID: 1832579084}
+  rawSeconds: 0
   timeBetweenSpawns: 3
   score: 0
-  divideBy: 100
+  divideBy: 1
   lives: 3
   livesObject: {fileID: 926095682}
+  timeScale: 1
+  speedMultiplier: 5000
+  spawnMultiplier: 225
+  numberOf5s: 0
   debugMode: 0
   redSpawns: 0
   purpleSpawns: 0

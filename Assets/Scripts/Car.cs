@@ -25,7 +25,8 @@ public class Car : MonoBehaviour
     {
         int index = (int)carType;
         sr.sprite = carSprites.ElementAt(index);
-        float realSpeed = speed / 1000 + GameManager.instance.score / 5 / 3750;
+        float changeBy = GameManager.instance.rawSeconds / GameManager.instance.speedMultiplier;
+        float realSpeed = speed / 1000 + changeBy;
         transform.localPosition = new Vector2(transform.localPosition.x, transform.localPosition.y + realSpeed);
     }
 
@@ -36,7 +37,6 @@ public class Car : MonoBehaviour
             Destroy(gameObject);
             if (collision.gameObject.name.StartsWith(carType.ToString()))
 			{
-                Debug.Log("YOU WIN");
                 GameManager.instance.score += 5;
             }
 			else

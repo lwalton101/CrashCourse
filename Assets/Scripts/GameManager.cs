@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshPro stopWatchText = null;
     [SerializeField] private TextMeshPro pointsText = null;
     private float secondsCount;
-    private float rawSeconds;
+    public float rawSeconds;
     private int minutesCount;
     private float lastTime = 0;
     [SerializeField] private float timeBetweenSpawns = 0f;
@@ -23,6 +23,11 @@ public class GameManager : MonoBehaviour
     private Road.Lane lastLane;
     public int lives = 3;
     [SerializeField] private GameObject livesObject;
+    [Range(0, 50)]
+    public float timeScale = 0f;
+    public float speedMultiplier = 0.05f;
+    public float spawnMultiplier = 0.05f;
+    public float numberOf5s = 0f;
 
     [Header("Debugs")]
     [SerializeField] private bool debugMode = false;
@@ -44,6 +49,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Time.timeScale = timeScale;
         StopWatch();
         SpawnCar();
         if(currentCar != null && debugMode)
@@ -83,15 +89,17 @@ public class GameManager : MonoBehaviour
             firstCar.GetComponent<Car>().carType = Car.CarType.Purple;
             
         }
-        float localtime = (int)lastTime + timeBetweenSpawns - (score / divideBy);
-        if(score / divideBy >= 1.75)
+        float changeBy = 3 - (rawSeconds / spawnMultiplier);
+        float localtime = lastTime + changeBy;
+        Debug.Log("Change By: " + changeBy + " Local Time: " + localtime + " To be subtracted: " + (rawSeconds / spawnMultiplier)); 
+        if(changeBy <= 1.75)
 		{
             localtime = lastTime + 1.75f;
 		}
 
         if (rawSeconds < localtime)
 		{
-            Debug.Log(rawSeconds + " is smaller than" + " " + localtime);
+            //Debug.Log(rawSeconds + " is smaller than" + " " + localtime);
             return;
 		}
         lastTime = (int)rawSeconds;
