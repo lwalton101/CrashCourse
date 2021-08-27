@@ -1,12 +1,15 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    public bool isOver = false;
     public GameObject currentCar;
+    public GameObject gameOverPanel;
     [SerializeField] private GameObject carPrefab = null;
     [SerializeField] private List<Sprite> lifeSprites = new List<Sprite>();
     [SerializeField] private TextMeshPro stopWatchText = null;
@@ -51,8 +54,11 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         Time.timeScale = timeScale;
-        StopWatch();
-        SpawnCar();
+		if (!isOver)
+		{
+            StopWatch();
+            SpawnCar();
+        }
 
         if(currentCar != null && debugMode)
 		{
@@ -71,17 +77,57 @@ public class GameManager : MonoBehaviour
 
         livesObject.GetComponent<SpriteRenderer>().sprite = lifeSprites.ElementAt(lives);
 
-        if(lives == 0)
+        if(lives == 0 && !isOver)
 		{
             GameOver();
 		}
 
+        ListenToInput();
+
         pointsText.text = "Points: " + score.ToString();
     }
 
+
+    public void ListenToInput()
+	{
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            SwitchLane((Road.Lane)0);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            SwitchLane((Road.Lane)1);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            SwitchLane((Road.Lane)2);
+        }
+    }
 	public void GameOver()
 	{
-		throw new System.NotImplementedException();
+        lives = 0;
+        gameOverPanel.SetActive(true);
+        TextMeshProUGUI scoreText = GameObject.Find("GameOverScore").GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI highScoreText = GameObject.Find("GameOverHighScore").GetComponent<TextMeshProUGUI>();
+        scoreText.text = "Score: " + score;
+        highScoreText.text = "Highscore: " + "not implemented";
+        isOver = true;
+        foreach(GameObject gameObject in GameObject.FindGameObjectsWithTag("Car"))
+		{
+            Destroy(gameObject);
+		}
+	}
+
+    public void Retry()
+	{
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+	}
+
+    public void MainMenu()
+	{
+        SceneManager.LoadScene(0);
 	}
 
 	public void SpawnCar()
@@ -102,7 +148,7 @@ public class GameManager : MonoBehaviour
             changeBy = .5f;
             localtime = lastTime + .5f;
 		}
-        Debug.Log(changeBy);
+        //Debug.Log(changeBy);
         if (rawSeconds < localtime)
 		{
             //Debug.Log(rawSeconds + " is smaller than" + " " + localtime);

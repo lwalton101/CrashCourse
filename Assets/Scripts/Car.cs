@@ -41,7 +41,6 @@ public class Car : MonoBehaviour
     }
 	private void Update()
 	{ 
-        
         if (GameManager.instance.currentCar == gameObject)
         {
             selectObject.SetActive(true);
