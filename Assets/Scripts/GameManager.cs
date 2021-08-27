@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour
 
             Car car = currentCar.GetComponent<Car>();
 
-            //Debug.Log("Current Lane: " + car.currentLane + ", Car Type: " + car.carType + ", Car Sprite: " + car.carSprites.ElementAt((int)car.carType));
+            Debug.Log("Current Lane: " + car.currentLane + ", Car Type: " + car.carType);
         }
 
         livesObject.GetComponent<SpriteRenderer>().sprite = lifeSprites.ElementAt(lives);
