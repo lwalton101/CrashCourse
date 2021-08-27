@@ -61,7 +61,6 @@ public class Car : MonoBehaviour
                     GameManager.instance.score += 5;
                     return;
                 case CarType.SlowArrow:
-                    
                     return;
                 case CarType.SpeedArrrow:
                     return;
@@ -75,6 +74,7 @@ public class Car : MonoBehaviour
             }
 			else
 			{
+                AudioManager.instance.Play("LifeLost");
                 GameManager.instance.lives--;
 			}
         }

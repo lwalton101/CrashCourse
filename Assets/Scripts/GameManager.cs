@@ -60,6 +60,11 @@ public class GameManager : MonoBehaviour
             SpawnCar();
         }
 
+        if (rawSeconds > 40)
+        {
+            AudioManager.instance.musicSounds.ElementAt(0).source.pitch = 1 + rawSeconds / 600;
+        }
+
         if(currentCar != null && debugMode)
 		{
             Collider2D centerCol = Physics2D.OverlapPoint(new Vector2(currentCar.transform.position.x + 8, currentCar.transform.position.y));

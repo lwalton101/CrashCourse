@@ -3221,6 +3221,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1916724041598249280, guid: 8803538d86fe1724b80bb0fc98add755,
+        type: 3}
+      propertyPath: musicSounds.Array.data[0].volume
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 2133329814880929214, guid: 8803538d86fe1724b80bb0fc98add755,
         type: 3}
       propertyPath: m_LocalPosition.x

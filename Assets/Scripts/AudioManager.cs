@@ -32,7 +32,7 @@ public class AudioManager : MonoBehaviour
 
         SetAudioSource();
 
-        AudioManager.instance.Play("Background1");
+        Play("Background1");
     }
 
 	// Update is called once per frame
