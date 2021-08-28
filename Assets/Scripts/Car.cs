@@ -12,7 +12,7 @@ public class Car : MonoBehaviour
     public Road.Lane currentLane;
     private SpriteRenderer sr;
     [SerializeField] private List<Sprite> carSprites = new List<Sprite>();
-    [SerializeField] private GameObject selectObject;
+    [SerializeField] private GameObject selectObject = null;
     // Start is called before the first frame update
     void Awake()
     {

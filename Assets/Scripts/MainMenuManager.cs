@@ -7,7 +7,7 @@ public class MainMenuManager : MonoBehaviour
 	private float rawSeconds;
 	private int minutesCount;
     private int lastSecond;
-    [SerializeField] private GameObject uiCarPrefab;
+    [SerializeField] private GameObject uiCarPrefab = null;
 
 	// Start is called before the first frame update
 	void Update()
@@ -83,7 +83,7 @@ public class MainMenuManager : MonoBehaviour
         rawSeconds += Time.deltaTime;
         string minutesText;
         string secondsText;
-        Debug.Log(rawSeconds);
+
         if (minutesCount < 10)
             minutesText = "0" + minutesCount;
         else

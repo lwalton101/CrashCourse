@@ -95,8 +95,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 25
-  carType: 0
-  currentLane: 0
+  carType: 2
+  currentLane: 2
   carSprites:
   - {fileID: 21300000, guid: c9b133796ade6fa408ac2b0fbe3c7db0, type: 3}
   - {fileID: 21300000, guid: 312b5fe3f37c358449088e6e6574055f, type: 3}

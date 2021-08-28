@@ -18,13 +18,11 @@ public class GameManager : MonoBehaviour
     public float rawSeconds;
     private int minutesCount;
     private float lastTime = 0;
-    [SerializeField] private float timeBetweenSpawns = 0f;
     private bool firstSpawn = false;
     public float score = 0;
-    [SerializeField] private float divideBy = 1000;
     private Road.Lane lastLane;
     public int lives = 3;
-    [SerializeField] private GameObject livesObject;
+    [SerializeField] private GameObject livesObject = null;
     [Range(0, 50)]
     public float timeScale = 0f;
     public float speedMultiplier = 0.05f;
