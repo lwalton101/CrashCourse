@@ -53,7 +53,7 @@ MonoBehaviour:
   musicSounds:
   - clip: {fileID: 8300000, guid: cdb3ed102d865b546a22fa66e9f71511, type: 3}
     name: Background1
-    volume: 0.8
+    volume: 0.1
     pitch: 1
     loop: 1
     source: {fileID: 0}

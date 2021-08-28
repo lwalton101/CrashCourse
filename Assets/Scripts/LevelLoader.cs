@@ -9,9 +9,22 @@ public class LevelLoader : MonoBehaviour
 
     public float transitionTime = 1f;
 
-	public void LoadNextLevel(int buildIndex)
+	public void Awake()
 	{
-		StartCoroutine(LoadLevel(buildIndex));
+		if(KeepData.instance.headingFrom == 1) { return; }
+		transition.SetTrigger("End");
+	}
+	public void LoadGame()
+	{
+		if(PlayerPrefs.GetInt(PlayerPrefsHandler.hasTutorialKey) == 1)
+		{
+			StartCoroutine(LoadLevel(2));
+		}
+		else
+		{
+			StartCoroutine(LoadLevel(1));
+		}
+
 	}
 
 	public IEnumerator LoadLevel(int buildIndex)
@@ -21,5 +34,10 @@ public class LevelLoader : MonoBehaviour
 		yield return new WaitForSeconds(transitionTime);
 
 		SceneManager.LoadScene(buildIndex);
+	}
+
+	public void LoadSpecificLevel(int buildIndex)
+	{
+		StartCoroutine(LoadLevel(buildIndex));
 	}
 }
